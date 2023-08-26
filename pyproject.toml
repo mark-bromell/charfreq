@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "charfreq"
+version = "23.8"
+authors = [
+    { name = "Mark Bromell" }
+]
+description = "Get character frequency inside files"
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+
+[project.urls]
+"Repository" = "https://github.com/mark-bromell/charfreq"
+"Bug Tracker" = "https://github.com/mark-bromell/charfreq/issues"
+
+[project.scripts]
+charfreq = "charfreq.__main__:main"

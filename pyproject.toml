@@ -24,3 +24,20 @@ requires-python = ">=3.8"
 
 [project.scripts]
 charfreq = "charfreq.__main__:main"
+
+
+[tool.ruff]
+select = ["E", "F", "W"]
+ignore = []
+line-length = 88
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]

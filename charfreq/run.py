@@ -1,4 +1,5 @@
-from glob import iglob
+from __future__ import annotations
+
 from logging import getLogger
 import os
 import re
@@ -6,23 +7,23 @@ import re
 
 log = getLogger(__name__)
 
+
 def character_frequency(
         paths: list[str],
-        only: str=None,
-        exclude: str=None
-    ) -> dict:
+        only: str = None,
+        exclude: str = None
+) -> dict:
     main_tally = dict()
     for path in paths:
         if not os.path.isfile(path) or not os.path.exists(path):
             continue
 
-        log.debug(f'opening {path}')
         with open(path, 'r') as file:
             try:
                 lines = file.read().splitlines()
             except UnicodeDecodeError as e:
                 log.info(
-                    f'Failed to decode {path}, continuing anyway', 
+                    f'Failed to decode {path}, continuing anyway',
                     exc_info=e
                 )
                 continue
@@ -59,7 +60,7 @@ def tally_up(lines: list[str]) -> dict:
     return output
 
 
-def clean_dict(tally: dict, only: str=None, exclude: str=None) -> dict:
+def clean_dict(tally: dict, only: str = None, exclude: str = None) -> dict:
     remove_keys = []
     for key in tally.keys():
         if only is not None and not re.match(only, key):

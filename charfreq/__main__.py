@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import json
 import logging
@@ -13,6 +15,7 @@ logging.basicConfig(
     level=logging.WARNING
 )
 log = logging.getLogger('root')
+
 
 def main():
     try:

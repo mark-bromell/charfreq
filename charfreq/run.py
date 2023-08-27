@@ -2,11 +2,36 @@ from glob import iglob
 from logging import getLogger
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 log = getLogger(__name__)
 
-def character_frequency(
+def frequency_parallel(
+        paths: list[str],
+        only: str=None,
+        exclude: str=None
+    ) -> dict:
+    main_tally = dict()
+    thread_count = min(32, os.cpu_count() + 4)
+    paths_split = split(paths, thread_count)
+    log.debug(f'Using {thread_count} threads')
+    log.debug(f'paths split into {len(paths_split)} parts')
+    with ThreadPoolExecutor() as executor:
+        future_tally = [executor.submit(frequency, p) for p in paths_split]
+        for future in future_tally:
+            try:
+                log.debug(f'future: {future}')
+                sub_tally = future.result()
+                main_tally = merge(main_tally, sub_tally)
+            except Exception as e:
+                log.info('Failed while performing parallel job',  exc_info=e)
+
+    main_tally = clean_dict(main_tally, only, exclude)
+    return dict(sorted(main_tally.items(), key=lambda x: x[1]))
+
+
+def frequency(
         paths: list[str],
         only: str=None,
         exclude: str=None
@@ -16,7 +41,6 @@ def character_frequency(
         if not os.path.isfile(path) or not os.path.exists(path):
             continue
 
-        log.debug(f'opening {path}')
         with open(path, 'r') as file:
             try:
                 lines = file.read().splitlines()
@@ -27,7 +51,6 @@ def character_frequency(
                 )
                 continue
 
-            log.debug(f'tallying {path}')
             sub_tally = tally_up(lines)
             main_tally = merge(main_tally, sub_tally)
 
@@ -49,6 +72,13 @@ def merge(tally1: dict, tally2: dict) -> dict:
         new_dict[key] = tally2[key]
 
     return new_dict
+
+
+# https://stackoverflow.com/a/2135920
+def split(a: list, n: int) -> list:
+    k, m = divmod(len(a), n)
+    result = (a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n))
+    return list(result)
 
 
 def tally_up(lines: list[str]) -> dict:

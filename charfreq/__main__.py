@@ -6,11 +6,11 @@ import textwrap
 from importlib.metadata import version
 from pathlib import Path
 
-from charfreq.run import character_frequency, clean_json
+from charfreq.run import frequency, clean_json, frequency_parallel
 
 logging.basicConfig(
     format='[%(levelname)s] %(message)s',
-    level=logging.WARNING
+    level=logging.WARN
 )
 log = logging.getLogger('root')
 
@@ -29,12 +29,11 @@ def cli_entry(input_args=None):
     if args.debug:
         log.setLevel(logging.DEBUG)
 
-    log.debug(args)
     handle_files(args)
 
 
 def handle_files(args):
-    results = character_frequency(args.files, args.only, args.exclude)
+    results = frequency_parallel(args.files, args.only, args.exclude)
     json_output = json.dumps(results, indent=4)
     print(clean_json(json_output))
 

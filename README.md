@@ -1,35 +1,49 @@
 # charfreq
 
 Get the frequency of characters in your files!
+Outputs JSON with character counts
 
 ## Install
 
 ```shell
 pip3 install charfreq
 ```
-## Usage
 
-Rather than going into detail on how to use this, here's a few example commands
-to help you know what to expect from the tool.
+## Example usage
 
 ```shell
+charfreq --only "[()]" ./**/*.py
+```
+
+This outputs the following JSON
+```json
+{
+    "(": 83281,
+    ")": 83286
+}
+```
+
+### More random examples
+
+```shell
+# Have a look at the options available
 charfreq --help
 
 # Check a file
-charfreq -f script.py
+charfreq script.py
 
 # Check many files
-charfreq -f script.py test.py api.js
+charfreq script.py test.py api.js
 
-# Ignore the space and * character
-charfreq -f script.py -i " " "*"
+# Test all py files recursively using glob (only tested on bash shell)
+charfreq ./**/*.py
 
-# Ignore based on regex
-charfreq -f script.py -x "[a-zA-Z]"
+# Use multiple globs! (only tested on bash shell)
+charfreq ./**/*.py ./**/*.html
 
-# Pipe in files using find
-find . -type f -name "*.py" | charfreq
+# Exclude characters based on regex
+charfreq --exclude "[a-zA-Z]" ./**/*.py
 
-# Pipe and ignore chars using regex (this can be quite slow with large file trees)
-find . -type f -name "*.py" | charfreq -x "[a-zA-Z0-9]"
+# Only capture characters based on regex
+charfreq --only "[a-zA-Z]" ./**/*.py
 ```

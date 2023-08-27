@@ -1,18 +1,18 @@
-import logging
-import os
-import sys
 import argparse
-import textwrap
 import json
+import logging
+import sys
+import textwrap
+from importlib.metadata import version
+from pathlib import Path
 
-from charfreq.run import character_frequency
+from charfreq.run import character_frequency, clean_json
 
 logging.basicConfig(
     format='[%(levelname)s] %(message)s',
     level=logging.WARNING
 )
 log = logging.getLogger('root')
-
 
 def main():
     try:
@@ -25,9 +25,7 @@ def main():
 
 
 def cli_entry(input_args=None):
-    """Entry point for the command line utility."""
     args = parse_args(input_args)
-    
     if args.debug:
         log.setLevel(logging.DEBUG)
 
@@ -36,42 +34,51 @@ def cli_entry(input_args=None):
 
 
 def handle_files(args):
-    results = character_frequency(args.files, args.ignore, args.ignore_regex)
-    sorted_results = dict(sorted(results.items(), key=lambda x: x[1]))
-    json_output = json.dumps(sorted_results, indent=4)
-
-    # A lot of "\uXXXX" characters were being displayed, cleaning them here.
-    clean_output = ""
-    for line in json_output.splitlines():
-        if '\\u' not in line:
-            clean_output += f'{line}{os.linesep}'
-    print(clean_output)
+    results = character_frequency(args.files, args.only, args.exclude)
+    json_output = json.dumps(results, indent=4)
+    print(clean_json(json_output))
 
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
         prog='charfreq',
-        add_help=True,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent('''\
+            examples:
+              charfreq script.py
+              charfreq script.py test.py api.js
+              charfreq ./**/*.py
+              charfreq ./**/*.py ./**/*.html
+              charfreq --exclude "[a-zA-Z]" ./**/*.py
+              charfreq --only "[a-zA-Z]" ./**/*.py
+         ''')
     )
     parser.add_argument(
         '--debug',
         action='store_true',
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
-        '-f', '--files',
-        type=str,
-        nargs='+',
-        default=[line.strip() for line in sys.stdin]
+        '-v', '--version',
+        action='version',
+        version=version("charfreq")
     )
     parser.add_argument(
-        '-i', '--ignore',
+        '-o', '--only',
         type=str,
-        nargs='+',
-        default=[]
+        metavar="re",
+        help='regex of characters to only show'
     )
     parser.add_argument(
-        '-x', '--ignore-regex',
+        '-x', '--exclude',
         type=str,
+        metavar="re",
+        help='regex of characters to exclude'
+    )
+    parser.add_argument(
+        'files',
+        type=Path,
+        nargs="+",
     )
     return parser.parse_args(args)
 

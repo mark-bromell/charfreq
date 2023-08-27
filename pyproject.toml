@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "charfreq"
-version = "23.8"
+version = "23.8.2"
 authors = [
     { name = "Mark Bromell" }
 ]

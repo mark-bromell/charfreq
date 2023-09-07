@@ -60,6 +60,15 @@ def tally_up(lines: list[str]) -> dict:
     return output
 
 
+def tally_up_bigram(lines: list[str]) -> dict:
+    output = dict()
+    for line in lines:
+        for i in range(0, len(line) - 1):
+            combo = line[i] + line[i+1]
+            output[combo] = output.get(combo, 0) + 1
+    return output
+
+
 def clean_dict(tally: dict, only: str = None, exclude: str = None) -> dict:
     remove_keys = []
     for key in tally.keys():

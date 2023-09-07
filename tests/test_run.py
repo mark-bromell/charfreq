@@ -1,5 +1,7 @@
 import textwrap
-from charfreq.run import merge, tally_up, clean_dict, clean_json
+
+from charfreq.run import (clean_dict, clean_json, merge, tally_up,
+                          tally_up_bigram)
 
 
 def test_merge():
@@ -37,6 +39,22 @@ def test_tally_up():
         '2': 1,
         '3': 1,
     }
+
+
+def test_tally_up_bigram():
+    lines = [
+        'asas',
+        'qwer',
+    ]
+    tally = tally_up_bigram(lines)
+    assert tally == {
+        'as': 2,
+        'sa': 1,
+        'qw': 1,
+        'we': 1,
+        'er': 1,
+    }
+
 
 
 def test_clean_dict__only():

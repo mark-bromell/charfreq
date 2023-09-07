@@ -37,7 +37,9 @@ def cli_entry(input_args=None):
 
 
 def handle_files(args):
-    results = character_frequency(args.files, args.only, args.exclude)
+    results = character_frequency(
+        args.files, args.only, args.exclude, args.bigram
+    )
     json_output = json.dumps(results, indent=4)
     print(clean_json(json_output))
 
@@ -77,6 +79,11 @@ def parse_args(args):
         type=str,
         metavar="re",
         help='regex of characters to exclude'
+    )
+    parser.add_argument(
+        '-b', '--bigram',
+        action='store_true',
+        help='get character pair frequency',
     )
     parser.add_argument(
         'files',

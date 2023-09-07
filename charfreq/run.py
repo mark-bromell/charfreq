@@ -11,7 +11,8 @@ log = getLogger(__name__)
 def character_frequency(
         paths: list[str],
         only: str = None,
-        exclude: str = None
+        exclude: str = None,
+        bigram: bool = False,
 ) -> dict:
     main_tally = dict()
     for path in paths:
@@ -29,7 +30,10 @@ def character_frequency(
                 continue
 
             log.debug(f'tallying {path}')
-            sub_tally = tally_up(lines)
+            if bigram:
+                sub_tally = tally_up_bigram(lines)
+            else:
+                sub_tally = tally_up(lines)
             main_tally = merge(main_tally, sub_tally)
 
     main_tally = clean_dict(main_tally, only, exclude)

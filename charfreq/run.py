@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from logging import getLogger
 import os
-import re
 
 
 log = getLogger(__name__)
@@ -10,8 +9,8 @@ log = getLogger(__name__)
 
 def character_frequency(
         paths: list[str],
-        only: str = None,
-        exclude: str = None,
+        symbols: bool = True,
+        alpha: bool = True,
         bigram: bool = False,
 ) -> dict:
     main_tally = dict()
@@ -36,7 +35,7 @@ def character_frequency(
                 sub_tally = tally_up(lines)
             main_tally = merge(main_tally, sub_tally)
 
-    main_tally = clean_dict(main_tally, only, exclude)
+    main_tally = clean_dict(main_tally, symbols, alpha, bigram)
     return dict(sorted(main_tally.items(), key=lambda x: x[1]))
 
 
@@ -73,15 +72,31 @@ def tally_up_bigram(lines: list[str]) -> dict:
     return output
 
 
-def clean_dict(tally: dict, only: str = None, exclude: str = None) -> dict:
+def clean_dict(tally: dict, symbols: bool, alpha: bool, bigram: bool) -> dict:
+    if not symbols and not alpha:
+        return tally
+
     remove_keys = []
+    slist = [
+        "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "%", "[", "]", "\\",
+        "+", "=", "-", "_", "|", "<", ">", "?", "/", "\"", "'", "{", "}", ":",
+        "`", ";", ",", "."
+    ]
     for key in tally.keys():
-        if only is not None and not re.match(only, key):
-            remove_keys.append(key)
-            continue
-        if exclude is not None and re.match(exclude, key):
-            remove_keys.append(key)
-            continue
+        if bigram:
+            if symbols and (key[0] not in slist or key[1] not in slist):
+                remove_keys.append(key)
+                continue
+            if alpha and (not key[0].isalnum() or not key[1].isalnum()):
+                remove_keys.append(key)
+                continue
+        else:
+            if symbols and key not in slist:
+                remove_keys.append(key)
+                continue
+            if alpha and not key.isalnum():
+                remove_keys.append(key)
+                continue
 
     [tally.pop(k, None) for k in remove_keys]
     return tally

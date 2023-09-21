@@ -38,7 +38,7 @@ def cli_entry(input_args=None):
 
 def handle_files(args):
     results = character_frequency(
-        args.files, args.only, args.exclude, args.bigram
+        args.files, args.symbols, args.alphas, args.bigram
     )
     json_output = json.dumps(results, indent=4)
     print(clean_json(json_output))
@@ -54,8 +54,8 @@ def parse_args(args):
               charfreq script.py test.py api.js
               charfreq ./**/*.py
               charfreq ./**/*.py ./**/*.html
-              charfreq --exclude "[a-zA-Z]" ./**/*.py
-              charfreq --only "[a-zA-Z]" ./**/*.py
+              charfreq --symbols ./**/*.py
+              charfreq --alphas ./**/*.py
          ''')
     )
     parser.add_argument(
@@ -69,21 +69,19 @@ def parse_args(args):
         version=version("charfreq")
     )
     parser.add_argument(
-        '-o', '--only',
-        type=str,
-        metavar="re",
-        help='regex of characters to only show'
+        '-a', '--alphas',
+        action='store_true',
+        help='only get alpha'
     )
     parser.add_argument(
-        '-x', '--exclude',
-        type=str,
-        metavar="re",
-        help='regex of characters to exclude'
+        '-s', '--symbols',
+        action='store_true',
+        help='only get symbols'
     )
     parser.add_argument(
         '-b', '--bigram',
         action='store_true',
-        help='get character pair frequency',
+        help='get character bigram (pair) frequency',
     )
     parser.add_argument(
         'files',

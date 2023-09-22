@@ -39,7 +39,7 @@ def handle_files(args):
     results = character_frequency(
         args.files, args.symbols, args.alphas, args.bigram
     )
-    [print(r) for r in results]
+    [print(f"{k}\t{v}") for k, v in results.items()]
 
 
 def parse_args(args):

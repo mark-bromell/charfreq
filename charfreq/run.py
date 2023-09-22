@@ -78,7 +78,7 @@ def clean_dict(tally: dict, symbols: bool, alpha: bool, bigram: bool) -> dict:
 
     remove_keys = []
     slist = [
-        "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "%", "[", "]", "\\",
+        "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "~", "[", "]", "\\",
         "+", "=", "-", "_", "|", "<", ">", "?", "/", "\"", "'", "{", "}", ":",
         "`", ";", ",", "."
     ]
@@ -100,13 +100,3 @@ def clean_dict(tally: dict, symbols: bool, alpha: bool, bigram: bool) -> dict:
 
     [tally.pop(k, None) for k in remove_keys]
     return tally
-
-
-def clean_json(input: str) -> str:
-    # A lot of "\uXXXX" characters were being displayed, cleaning them here.
-    output = ""
-    for line in input.splitlines():
-        if '\\u' not in line:
-            output += f'{line}{os.linesep}'
-
-    return output

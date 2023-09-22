@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import sys
 import textwrap
 from importlib.metadata import version
 from pathlib import Path
 
-from charfreq.run import character_frequency, clean_json
+from charfreq.run import character_frequency
 
 logging.basicConfig(
     format='[%(levelname)s] %(message)s',
@@ -40,8 +39,7 @@ def handle_files(args):
     results = character_frequency(
         args.files, args.symbols, args.alphas, args.bigram
     )
-    json_output = json.dumps(results, indent=4)
-    print(clean_json(json_output))
+    [print(r) for r in results]
 
 
 def parse_args(args):

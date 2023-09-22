@@ -1,7 +1,6 @@
 import textwrap
 
-from charfreq.run import (clean_dict, clean_json, merge, tally_up,
-                          tally_up_bigram)
+from charfreq.run import (clean_dict, merge, tally_up, tally_up_bigram)
 
 
 def test_merge():
@@ -120,17 +119,3 @@ def test_clean_dict__alpha_bigram():
     assert clean_dict(tally, symbols=False, alpha=True, bigram=True) == {
         "ab": 10,
     }
-
-
-def test_clean_json():
-    json = textwrap.dedent("""\
-        {
-            "\\u1234": 10
-            "$": 10
-        }
-    """)
-    assert clean_json(json) == textwrap.dedent("""\
-        {
-            "$": 10
-        }
-    """)
